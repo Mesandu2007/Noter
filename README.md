@@ -114,24 +114,11 @@ PORT=5000
 MONGO_URI=your_mongodb_connection
 JWT_SECRET=your_secret_key
 
-Run:
 
-npm run dev
-3️⃣ Frontend Setup
-cd frontend
-npm install
-npm run dev
-🌐 Usage
-Register an account
-Login
-Create notes
-Pin / Favorite notes
-Search and filter
-🚀 Future Improvements
-📊 Charts dashboard
-🌙 Dark mode
-🔔 Notifications
-📎 Attachments
-👨‍💻 Author
+Author: Mesandu Gunarwardhana
 
-Your Name
+
+
+
+
+
