@@ -2,7 +2,7 @@ import axios from "axios";
 
 // 🔗 BASE URL (your backend)
 const API = axios.create({
-  baseURL: "http://localhost:5000", // change if needed
+  baseURL: "http://localhost:3000", // change if needed
 });
 
 // 🔐 Attach token automatically
@@ -37,6 +37,10 @@ export const forgotPassword = (data) =>
 export const resetPassword = (token, data) =>
   API.post(`/auth/reset-password/${token}`, data);
 
+// GET PROFILE
+export const getProfile = () =>
+  API.get("/auth/profile");
+
 
 // =============================
 // 📝 NOTES APIs
@@ -60,8 +64,8 @@ export const deleteNote = (id) =>
 
 // TOGGLE PIN
 export const togglePin = (id) =>
-  API.put(`/notes/pin/${id}`);
+  API.put(`/notes/${id}/toggle-pin`);
 
 // TOGGLE FAVORITE
 export const toggleFavorite = (id) =>
-  API.put(`/notes/favorite/${id}`);
+  API.put(`/notes/${id}/toggle-favorite`);

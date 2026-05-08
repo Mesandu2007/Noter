@@ -1,46 +1,50 @@
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { 
   getNotes, 
   createNote, 
   updateNote, 
   deleteNote, 
   togglePin, 
-  toggleFavorite 
+  toggleFavorite,
+  getUserProfile
 } from "../../services/apiService";
 
 import NoteCard from "../components/NoteCard";
 import NoteModalForm from "../components/NoteModalForm";
 import Footer from "../components/Footer";
 
-export default function NotesPage() {
+export default function NotesPage({ onLogout }) {
   const [notes, setNotes] = useState([]);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
 
   const [showForm, setShowForm] = useState(false);
   const [editNote, setEditNote] = useState(null);
 
-  const navigate = useNavigate();
-
-  const loadNotes = async () => {
+  const loadData = async () => {
     try {
       const res = await getNotes();
       setNotes(res.data);
+
+      const userRes = await getUserProfile();
+      // Extract data safely regardless of nesting (res.data or res.data.user)
+      const userData = userRes.data?.user || userRes.data;
+      if (userData) setUser(userData);
     } catch (err) {
       console.error("Error connecting to the backend:", err);
     }
   };
 
   useEffect(() => {
-    loadNotes();
+    loadData();
   }, []);
-
-  // LOGOUT
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/");
-  };
 
   // CREATE / UPDATE
   const handleSubmit = async (form, id) => {
@@ -50,7 +54,7 @@ export default function NotesPage() {
     } else {
       await createNote(form);
     }
-    loadNotes();
+    loadData();
   };
 
   // EDIT
@@ -85,12 +89,32 @@ export default function NotesPage() {
             Dashboard
           </Link>
 
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 px-3 py-1 rounded text-white text-sm"
-          >
-            Logout
-          </button>
+          {/* USER PROFILE */}
+          <div className="relative">
+            <button
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className="w-10 h-10 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold transition shadow-md"
+            >
+              {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+            </button>
+
+            {isProfileOpen && (
+              <div className="absolute right-0 mt-2 w-64 bg-slate-800 border border-slate-700 rounded-lg shadow-2xl p-4 z-50">
+                <p className="text-white font-semibold truncate">
+                  {user?.name || "User Name"}
+                </p>
+                <p className="text-gray-400 text-sm truncate mb-4">
+                  {user?.email || "email@example.com"}
+                </p>
+                <button
+                  onClick={onLogout}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white text-sm py-2 rounded-md transition font-medium"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -149,9 +173,9 @@ export default function NotesPage() {
               key={note._id}
               note={note}
               onEdit={handleEdit}
-              onDelete={(id) => deleteNote(id).then(loadNotes)}
-              onPin={(id) => togglePin(id).then(loadNotes)}
-              onFavorite={(id) => toggleFavorite(id).then(loadNotes)}
+              onDelete={(id) => deleteNote(id).then(loadData)}
+              onPin={(id) => togglePin(id).then(loadData)}
+              onFavorite={(id) => toggleFavorite(id).then(loadData)}
             />
           ))}
 

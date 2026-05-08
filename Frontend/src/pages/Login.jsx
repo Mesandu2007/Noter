@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import { loginUser } from "../../services/apiService";
 
-export default function Login() {
+export default function Login({ onLoginSuccess }) {
   const [form, setForm] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -14,9 +14,9 @@ export default function Login() {
     e.preventDefault();
     try {
       setError("");
-      const res = await loginUser(form);
-      localStorage.setItem("token", res.data.token);
-      navigate("/notes");
+      const res = await loginUser(form); // res.data should contain token and user._id
+      onLoginSuccess(res.data); // Call the prop to update auth state in App.jsx and store userId
+      navigate("/notes"); // Navigate to notes after successful login
     } catch (err) {
       // This will capture Network Errors (backend down) or server-side error messages
       setError(err.response?.data?.msg || "Cannot connect to server. Is the backend running?");

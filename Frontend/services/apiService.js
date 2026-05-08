@@ -1,67 +1,52 @@
 import axios from "axios";
 
-// 🔗 BASE URL (your backend)
-const API = axios.create({
-  baseURL: "http://localhost:5000/api", // Corrected to match the backend port (likely 3000)
-});
+const API_URL = "http://localhost:3000/api"; // Matches the port and prefix in Login.jsx
 
-// 🔐 Attach token automatically
-API.interceptors.request.use((req) => {
+const getAuthHeaders = () => {
   const token = localStorage.getItem("token");
+  return token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+};
 
-  if (token) {
-    req.headers.Authorization = `Bearer ${token}`;
-  }
+export const registerUser = async (userData) => {
+  return axios.post(`${API_URL}/auth/register`, userData);
+};
 
-  return req;
-});
+export const loginUser = async (credentials) => {
+  return axios.post(`${API_URL}/auth/login`, credentials);
+};
 
+export const forgotPassword = async (emailData) => {
+  return axios.post(`${API_URL}/auth/forgot-password`, emailData);
+};
 
-// =============================
-// 🔐 AUTH APIs
-// =============================
+export const resetPassword = async (token, passwordData) => {
+  return axios.post(`${API_URL}/auth/reset-password/${token}`, passwordData);
+};
 
-// REGISTER
-export const registerUser = (data) =>
-  API.post("/auth/register", data);
+export const getNotes = async () => {
+  return axios.get(`${API_URL}/notes`, getAuthHeaders());
+};
 
-// LOGIN
-export const loginUser = (data) =>
-  API.post("/auth/login", data);
+export const getUserProfile = async () => {
+  return axios.get(`${API_URL}/auth/profile`, getAuthHeaders());
+};
 
-// FORGOT PASSWORD
-export const forgotPassword = (data) =>
-  API.post("/auth/forgot-password", data);
+export const createNote = async (noteData) => {
+  return axios.post(`${API_URL}/notes`, noteData, getAuthHeaders());
+};
 
-// RESET PASSWORD
-export const resetPassword = (token, data) =>
-  API.post(`/auth/reset-password/${token}`, data);
+export const updateNote = async (id, noteData) => {
+  return axios.put(`${API_URL}/notes/${id}`, noteData, getAuthHeaders());
+};
 
+export const deleteNote = async (id) => {
+  return axios.delete(`${API_URL}/notes/${id}`, getAuthHeaders());
+};
 
-// =============================
-// 📝 NOTES APIs
-// =============================
+export const togglePin = async (id) => {
+  return axios.put(`${API_URL}/notes/${id}/toggle-pin`, {}, getAuthHeaders());
+};
 
-// GET ALL NOTES
-export const getNotes = () =>
-  API.get("/notes");
-
-// CREATE NOTE
-export const createNote = (data) =>
-  API.post("/notes", data);
-
-// UPDATE NOTE
-export const updateNote = (id, data) =>
-  API.put(`/notes/${id}`, data);
-
-// DELETE NOTE
-export const deleteNote = (id) =>
-  API.delete(`/notes/${id}`);
-
-// TOGGLE PIN
-export const togglePin = (id) =>
-  API.patch(`/notes/${id}/pin`);
-
-// TOGGLE FAVORITE
-export const toggleFavorite = (id) =>
-  API.patch(`/notes/${id}/favorite`);
+export const toggleFavorite = async (id) => {
+  return axios.put(`${API_URL}/notes/${id}/toggle-favorite`, {}, getAuthHeaders());
+};

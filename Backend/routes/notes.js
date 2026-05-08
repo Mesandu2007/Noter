@@ -7,7 +7,7 @@ router.get("/", auth, noteController.getNotes);
 router.put("/:id", auth, noteController.updateNote);
 router.delete("/:id", auth, noteController.deleteNote);
 
-router.patch("/:id/pin", auth, noteController.togglePin);
-router.patch("/:id/favorite", auth, noteController.toggleFavorite);
+router.put("/:id/toggle-pin", auth, noteController.togglePin);
+router.put("/:id/toggle-favorite", auth, noteController.toggleFavorite);
 
 module.exports = router;

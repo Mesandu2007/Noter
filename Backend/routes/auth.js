@@ -2,9 +2,11 @@ const router = require("express").Router();
 const passport = require("passport");
 const jwt = require("jsonwebtoken");
 const authController = require("../controllers/authController");
+const auth = require("../middleware/auth");
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
+router.get("/profile", auth, authController.getProfile);
 
 router.post("/forgot-password", authController.forgotPassword);
 router.post("/reset-password/:token", authController.resetPassword);

@@ -8,8 +8,12 @@ export default function DashboardPage() {
 
   useEffect(() => {
     const load = async () => {
-      const res = await getNotes();
-      setNotes(res.data);
+      try {
+        const res = await getNotes();
+        setNotes(res.data);
+      } catch (err) {
+        console.error("Error loading dashboard data:", err);
+      }
     };
     load();
   }, []);
@@ -27,9 +31,11 @@ export default function DashboardPage() {
           📊 Dashboard
         </h1>
 
-        <Link to="/notes" className="text-blue-400 text-sm">
-          Go to Notes →
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link to="/notes" className="text-blue-400 text-sm">
+            Go to Notes →
+          </Link>
+        </div>
       </div>
 
       {/* STATS */}
